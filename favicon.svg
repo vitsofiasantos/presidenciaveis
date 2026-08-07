@@ -1,9 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="22" fill="#0f172a"/>
-  <circle cx="50" cy="50" r="32" fill="none" stroke="#ffffff" stroke-width="4"/>
-  <circle cx="50" cy="50" r="20" fill="none" stroke="#10b981" stroke-width="3"/>
-  <path d="M50 10 L50 90 M10 50 L90 50 M22 22 L78 78 M22 78 L78 22" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
-  <polygon points="50,22 56,50 50,45 44,50" fill="#10b981"/>
-  <polygon points="50,78 56,50 50,55 44,50" fill="#ffffff"/>
-  <circle cx="50" cy="50" r="5" fill="#0f172a" stroke="#ffffff" stroke-width="2"/>
+  <!-- Anel do topo -->
+  <circle cx="50" cy="18" r="8" fill="none" stroke="#ffffff" stroke-width="4"/>
+  
+  <!-- Haste central -->
+  <line x1="50" y1="26" x2="50" y2="82" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Trava horizontal (Braço superior) -->
+  <line x1="28" y1="36" x2="72" y2="36" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Arco da base -->
+  <path d="M 20 56 C 20 86, 80 86, 80 56" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Pontas/Patas da Âncora (Verde) -->
+  <polygon points="12,56 22,46 22,62" fill="#10b981"/>
+  <polygon points="88,56 78,46 78,62" fill="#10b981"/>
+  
+  <!-- Ponto central decorativo (Verde) -->
+  <circle cx="50" cy="56" r="4" fill="#10b981"/>
 </svg>
