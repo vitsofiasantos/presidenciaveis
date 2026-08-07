@@ -4,119 +4,284 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eleições 2026</title>
+    <title>Eleições 2026 | Navigator Elections Intelligence</title>
     
+    <!-- Google Fonts: Serifas de Imprensa/Análise Política -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,600..900;1,600..900&display=swap" rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     
     <style>
         :root {
-            --bg-color: #f1f5f9;
+            --bg-color: #fbfcfd;          /* Fundo suave e nobre */
             --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --secondary: #10b981;
-            --danger: #ef4444;
+            --border-color: #dbe2ea;
+            --border-dark: #1e3a8a;
+            
+            --text-main: #0c1e38;         /* Azul marinho quase preto */
+            --text-muted: #526071;
+
+            /* AZUL INSTITUCIONAL NAVIGATOR */
+            --nav-blue: #1d4ed8;
+            --nav-navy: #0c1e38;
+            --nav-gold: #c59b27;
+            
+            --secondary: #059669; 
+            --danger: #dc2626;    
+
+            --table-header-bg: #f1f5f9;
+            --table-row-hover: #f8fafc;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color); color: var(--text-main); padding: 30px;
+            font-family: 'Lora', Georgia, 'Times New Roman', serif;
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            padding: 40px 30px; 
+            -webkit-font-smoothing: antialiased;
         }
         
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1450px; margin: 0 auto; }
         
-        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
-        .header h1 { font-size: 2rem; margin-bottom: 10px; color: #0f172a;}
-        
-        .controls { display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-top: 15px;}
-        
+        /* CABEÇALHO SERIFADO E EDITORIAL */
+        .header { 
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 25px; 
+            padding-bottom: 20px; 
+            border-bottom: 2px solid var(--nav-navy);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .brand-badge {
+            display: inline-block;
+            background-color: var(--nav-navy);
+            color: #ffffff;
+            font-family: system-ui, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .header h1 { 
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.6rem; 
+            font-weight: 700; 
+            color: var(--nav-navy);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        .header-subtitle {
+            color: var(--text-muted); 
+            font-size: 1.05rem;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* FILTRO DE DATA ULTRA VISÍVEL */
+        .period-highlight-box {
+            background: #f0f5ff;
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid var(--nav-blue);
+            padding: 16px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .period-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .period-title h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--nav-navy);
+            font-weight: 700;
+        }
+
+        .active-period-badge {
+            background-color: var(--nav-navy);
+            color: #ffffff;
+            font-family: system-ui, sans-serif;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .filter-controls-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .date-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-family: system-ui, sans-serif;
+            font-size: 0.88rem;
+        }
+
+        .date-picker-wrapper input {
+            border: none;
+            outline: none;
+            font-size: 0.88rem;
+            color: var(--text-main);
+            font-weight: 600;
+            background: transparent;
+        }
+
+        /* BOTÕES EDITORIAIS */
         .btn {
-            background-color: var(--primary); color: white; padding: 10px 20px;
-            border-radius: 8px; cursor: pointer; font-weight: 600; border: none;
-            transition: background 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 1rem;
+            background-color: var(--nav-navy); 
+            color: white; 
+            padding: 10px 20px;
+            border-radius: 3px; 
+            cursor: pointer; 
+            font-family: system-ui, sans-serif;
+            font-weight: 600; 
+            border: none;
+            transition: all 0.2s; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 0.88rem;
+            letter-spacing: 0.3px;
         }
-        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
-        .btn:hover { background-color: var(--primary-hover); }
-        .btn-toggle { background-color: #475569; color: white;}
-        .btn-toggle:hover { background-color: #334155; }
+        .btn:hover { background-color: var(--nav-blue); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
         
-        .btn-help {
-            background-color: #e2e8f0; color: #64748b; border: none; border-radius: 50%;
-            width: 24px; height: 24px; font-weight: bold; font-size: 14px; cursor: pointer;
-            display: inline-flex; align-items: center; justify-content: center; transition: 0.2s;
-            margin-left: 10px;
+        .btn-outline { 
+            background-color: #ffffff; 
+            color: var(--text-main); 
+            border: 1px solid #cbd5e1;
+            font-family: system-ui, sans-serif;
         }
-        .btn-help:hover { background-color: var(--primary); color: white; }
+        .btn-outline:hover { 
+            background-color: #f1f5f9; 
+            border-color: var(--nav-navy);
+        }
+
+        .btn-help {
+            background-color: transparent; 
+            color: var(--text-muted); 
+            border: 1px solid #cbd5e1; 
+            border-radius: 50%;
+            width: 20px; height: 20px; 
+            font-family: system-ui, sans-serif;
+            font-weight: bold; font-size: 11px; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; 
+            transition: 0.2s;
+            margin-left: 8px;
+        }
+        .btn-help:hover { background-color: var(--nav-navy); color: white; border-color: var(--nav-navy); }
 
         input[type="file"] { display: none; }
         
-        /* CORREÇÃO DO STATUS: Arredondado e alinhado */
         .status { 
-            font-size: 0.95rem; 
+            font-family: system-ui, sans-serif;
+            font-size: 0.82rem; 
             color: var(--text-muted); 
-            font-weight: 600; 
-            padding: 10px 20px; 
-            border-radius: 8px; 
-            display: inline-flex;
-            align-items: center;
+            font-weight: 500; 
+            padding: 6px 12px; 
+            border-radius: 4px; 
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
         }
 
-        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; display: none; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 30px; display: none; }
         
+        /* CARDS SERIFADOS E ELEGANTES */
         .card {
-            background: var(--card-bg); padding: 20px; border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;
+            background: var(--card-bg); 
+            padding: 28px; 
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(12, 30, 56, 0.04); 
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--nav-navy);
         }
         .card-header-flex {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
-            flex-wrap: wrap; gap: 10px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+            flex-wrap: wrap; gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
         }
         .title-area { display: flex; align-items: center; }
-        .card h2 { font-size: 1.2rem; color: #334155; margin: 0; }
+        .card h2 { 
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: var(--nav-navy); 
+            margin: 0; 
+        }
         
-        .canvas-container { position: relative; height: 500px; width: 100%; }
-        .canvas-container-large { position: relative; height: 550px; width: 100%; }
+        .canvas-container { position: relative; height: 440px; width: 100%; }
+        .canvas-container-large { position: relative; height: 490px; width: 100%; }
 
-        .view-wrapper { min-height: 500px; position: relative; }
-        .view-wrapper-large { min-height: 550px; position: relative; }
+        .view-wrapper { min-height: 440px; position: relative; }
+        .view-wrapper-large { min-height: 490px; position: relative; }
 
-        /* Estilos de Tabelas */
-        .table-container { overflow-x: auto; margin-top: 10px; }
-        .chart-table-container { overflow-x: auto; margin-top: 10px; display: none; max-height: 500px; }
+        /* TABELAS EM STILO REVISTA / RELATÓRIO */
+        .table-container { overflow-x: auto; margin-top: 5px; }
+        .chart-table-container { overflow-x: auto; margin-top: 10px; display: none; max-height: 440px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; white-space: nowrap; }
-        th { background-color: #f8fafc; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.8rem; position: sticky; top: 0; z-index: 2;}
-        tr:hover { background-color: #f1f5f9; }
-        .pos { color: var(--secondary); font-weight: bold; }
-        .neg { color: var(--danger); font-weight: bold; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; white-space: nowrap; }
+        th { 
+            font-family: system-ui, sans-serif;
+            background-color: #f8fafc; 
+            font-weight: 700; 
+            color: var(--nav-navy); 
+            font-size: 0.78rem; 
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            position: sticky; top: 0; z-index: 2;
+        }
+        tr:hover td { background-color: var(--table-row-hover); }
+        .pos { color: var(--secondary); font-weight: 600; }
+        .neg { color: var(--danger); font-weight: 600; }
         .neutral { color: var(--text-muted); }
 
-        /* Animações */
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Modal Styles */
+        /* MODAL */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6);
+            width: 100%; height: 100%; background-color: rgba(12, 30, 56, 0.5);
             backdrop-filter: blur(2px);
         }
         .modal-content {
-            background-color: #fff; margin: 10% auto; padding: 30px; border-radius: 12px;
-            width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            position: relative; animation: slideIn 0.2s ease-out;
+            background-color: #ffffff; margin: 8% auto; padding: 35px; border-radius: 4px;
+            width: 90%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-top: 4px solid var(--nav-navy); color: var(--text-main);
+            position: relative;
         }
-        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0;} to { transform: translateY(0); opacity: 1;} }
-        .close { color: #94a3b8; position: absolute; right: 20px; top: 20px; font-size: 24px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-        .close:hover { color: #334155; }
-        .modal h3 { color: #0f172a; margin-bottom: 15px; font-size: 1.3rem; padding-right: 20px;}
-        .modal p { color: #475569; line-height: 1.6; font-size: 1rem;}
+        .close { color: var(--text-muted); position: absolute; right: 20px; top: 20px; font-size: 24px; cursor: pointer; }
+        .modal h3 { font-family: 'Playfair Display', serif; color: var(--nav-navy); margin-bottom: 15px; font-size: 1.4rem; }
+        .modal p { line-height: 1.7; font-size: 0.95rem; color: #334155; }
+        .modal b { color: var(--nav-blue); }
 
     </style>
 </head>
@@ -132,16 +297,45 @@
 </div>
 
 <div class="container">
+    <!-- CABEÇALHO INSTITUCIONAL EDITORIAL -->
     <div class="header">
-        <h1>Dashboard Eleitoral</h1>
-        <p style="color: #64748b;">Evolução Temporal e Eficiência de Publicações</p>
-        <div class="controls">
+        <div>
+            <span class="brand-badge">Navigator Elections</span>
+            <h1>Monitor Político & Eleitoral 2026</h1>
+            <p class="header-subtitle">Relatório de Inteligência de Mídias Sociais e Desempenho Digital</p>
+        </div>
+        
+        <div>
             <label class="btn">
-                📊 Atualizar Base (Manual)
+                📊 Carregar Base CSV
                 <input type="file" id="csvFileInput" accept=".csv" onchange="handleFile(event)">
             </label>
-            <div id="statusText" class="status">Buscando arquivo automático no repositório...</div>
         </div>
+    </div>
+
+    <!-- PAINEL DE PERÍODO/FILTRO DE DATA EM DESTAQUE -->
+    <div class="period-highlight-box">
+        <div class="period-title">
+            <h3>📅 Período de Análise:</h3>
+            <span class="active-period-badge" id="periodDisplayBadge">Carregando período...</span>
+        </div>
+
+        <div class="filter-controls-group">
+            <div class="date-picker-wrapper">
+                <span>De:</span>
+                <input type="date" id="startDate" onchange="applyDateFilter()">
+                <span>Até:</span>
+                <input type="date" id="endDate" onchange="applyDateFilter()">
+            </div>
+            
+            <button class="btn btn-sm btn-outline" onclick="resetDateFilter()">Ver Tudo</button>
+            <button class="btn btn-sm btn-outline" onclick="setPresetDays(7)">Últimos 7 dias</button>
+            <button class="btn btn-sm btn-outline" onclick="setPresetDays(30)">Últimos 30 dias</button>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+        <div id="statusText" class="status">Conectando à base de dados...</div>
     </div>
 
     <div class="dashboard-grid" id="dashboardGrid">
@@ -151,15 +345,15 @@
             <div class="card-header-flex">
                 <div class="title-area">
                     <h2>Resumo Geral por Candidato</h2>
-                    <button class="btn-help" onclick="openHelp('Resumo Geral', 'Visão consolidada do período carregado.<br><br><b>Cálculos Matemáticos aplicados na Planilha:</b><br><br>• <b>Total Seguidores:</b> Soma absoluta da coluna &quot;Seguidores&quot; (Insta + FB + TikTok + X) na <i>última data cronológica</i> disponível para cada candidato.<br>• <b>Saldo:</b> Soma matemática da coluna &quot;CrescimentoDiario&quot; de todas as datas e todas as redes.<br>• <b>Total de Posts:</b> Soma bruta da coluna &quot;Posts&quot; de todas as datas e redes.')">?</button>
+                    <button class="btn-help" onclick="openHelp('Resumo Geral', 'Consolidado do período selecionado.<br><br><b>Métricas:</b><br>• <b>Total Seguidores:</b> Soma das redes no último dia do filtro.<br>• <b>Saldo:</b> Variação total de seguidores no intervalo.<br>• <b>Posts:</b> Publicações no período.')">?</button>
                 </div>
             </div>
-            <div class="table-container fade-in">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Candidato</th>
-                            <th>Total Seguidores (Atual)</th>
+                            <th>Total Seguidores (Final do Período)</th>
                             <th>Saldo de Ganho/Perda</th>
                             <th>Total de Posts</th>
                         </tr>
@@ -169,40 +363,40 @@
             </div>
         </div>
 
-        <!-- 1. GRÁFICO DE LINHA: Evolução Diária do Ganho -->
+        <!-- 1. GRÁFICO DE LINHA: Evolução Diária -->
         <div class="card">
             <div class="card-header-flex">
                 <div class="title-area">
-                    <h2>Evolução Temporal: Saldo de Ganho/Perda por Dia</h2>
-                    <button class="btn-help" onclick="openHelp('Evolução Temporal', 'Mostra a oscilação de ganho ou perda de seguidores dia após dia.<br><br><b>Cálculo Matemático aplicado na Planilha:</b><br><br>Para cada dia no eixo X, o sistema varre a planilha e soma a coluna <b>&quot;CrescimentoDiario&quot;</b> agrupando as 4 redes sociais (Instagram + Facebook + X + TikTok) de cada candidato.<br><br><i>Fórmula do Ponto no Gráfico: (Crescimento Insta no Dia) + (Crescimento FB no Dia) + (Crescimento X no Dia) + (Crescimento TikTok no Dia).</i>')">?</button>
+                    <h2>Evolução Temporal: Variação Diária de Seguidores</h2>
+                    <button class="btn-help" onclick="openHelp('Evolução Temporal', 'Mede a oscilação de novos seguidores dia a dia no intervalo filtrado.')">?</button>
                 </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn btn-sm btn-toggle" id="btn_num_chartEvolucaoLinha" onclick="toggleChartLabels('chartEvolucaoLinha', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-toggle" onclick="toggleTableView('chartEvolucaoLinha', this, 'large')">📊 Ver Tabela</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-sm btn-outline" id="btn_num_chartEvolucaoLinha" onclick="toggleChartLabels('chartEvolucaoLinha', this)">👁️ Mostrar Números</button>
+                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartEvolucaoLinha', this)">📊 Ver Tabela</button>
                 </div>
             </div>
             <div class="view-wrapper-large">
-                <div class="canvas-container-large fade-in" id="container_chartEvolucaoLinha">
+                <div class="canvas-container-large" id="container_chartEvolucaoLinha">
                     <canvas id="chartEvolucaoLinha"></canvas>
                 </div>
                 <div id="table_chartEvolucaoLinha" class="chart-table-container"></div>
             </div>
         </div>
 
-        <!-- 2. Posts Empilhados -->
+        <!-- 2. Volume de Publicações -->
         <div class="card">
             <div class="card-header-flex">
                 <div class="title-area">
-                    <h2>Volume de Publicações (Separado por Rede)</h2>
-                    <button class="btn-help" onclick="openHelp('Volume de Publicações', 'Mede o esforço de comunicação do político no período analisado.<br><br><b>Cálculo Matemático aplicado na Planilha:</b><br><br>É a soma simples da coluna <b>&quot;Posts&quot;</b> filtrando por candidato e agrupando por Rede Social durante todo o período cadastrado.<br><br><i>Exemplo: Se o candidato teve 10 posts no Instagram e 5 no Facebook somando toda a semana, a barra empilhada final terá tamanho 15, exibindo as cores proporcionais de cada rede.</i>')">?</button>
+                    <h2>Volume de Publicações por Rede Social</h2>
+                    <button class="btn-help" onclick="openHelp('Volume de Publicações', 'Quantidade total de posts por plataforma no período.')">?</button>
                 </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn btn-sm btn-toggle" id="btn_num_chartPosts" onclick="toggleChartLabels('chartPosts', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-toggle" onclick="toggleTableView('chartPosts', this, 'normal')">📊 Ver Tabela</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-sm btn-outline" id="btn_num_chartPosts" onclick="toggleChartLabels('chartPosts', this)">👁️ Mostrar Números</button>
+                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartPosts', this)">📊 Ver Tabela</button>
                 </div>
             </div>
             <div class="view-wrapper">
-                <div class="canvas-container fade-in" id="container_chartPosts">
+                <div class="canvas-container" id="container_chartPosts">
                     <canvas id="chartPosts"></canvas>
                 </div>
                 <div id="table_chartPosts" class="chart-table-container"></div>
@@ -214,66 +408,66 @@
             <div class="card-header-flex">
                 <div class="title-area">
                     <h2>Matriz de Variação Diária (Novos Seguidores)</h2>
-                    <button class="btn-help" onclick="openHelp('Matriz de Variação Diária', 'O raio-X numérico detalhado do crescimento.<br><br><b>Cálculo Matemático aplicado na Planilha:</b><br><br>Cada célula cruza o Candidato com a Data, extraindo a soma matemática da coluna <b>&quot;CrescimentoDiario&quot;</b> correspondente a todas as redes sociais daquele dia.<br><br>A coluna <b>&quot;Saldo Período&quot;</b> é o somatório horizontal (soma total da variação de todos os dias da linha).')">?</button>
+                    <button class="btn-help" onclick="openHelp('Matriz Diária', 'Detalhamento numérico do crescimento diário do período.')">?</button>
                 </div>
             </div>
-            <div style="overflow-x: auto;" class="fade-in" id="dailyVariationTableContainer"></div>
+            <div style="overflow-x: auto;" id="dailyVariationTableContainer"></div>
         </div>
 
-        <!-- 4. Gráfico de Razão (Seguidores / Posts) -->
+        <!-- 4. Eficiência -->
         <div class="card">
             <div class="card-header-flex">
                 <div class="title-area">
                     <h2>Eficiência: Média de Seguidores Ganhos por Publicação</h2>
-                    <button class="btn-help" onclick="openHelp('Métrica de Eficiência', 'Calcula o Retorno Sobre o Esforço (ROI de comunicação).<br><br><b>Cálculo Matemático aplicado na Planilha:</b><br><br>Fórmula: <b>(Soma total da coluna &quot;CrescimentoDiario&quot; em todas as redes e dias) ÷ (Soma total da coluna &quot;Posts&quot; em todas as redes e dias)</b>.<br><br><i>Exemplo prático: Se a conta final apontar que o candidato ganhou 10.000 seguidores de saldo e a soma de posts da semana foi 10, o gráfico exibirá <b>1.000 seg/post</b>.</i><br><br>*Nota técnica: Candidatos com 0 publicações totais ou saldo final negativo de seguidores foram excluídos deste gráfico para não corromper o cálculo.')">?</button>
+                    <button class="btn-help" onclick="openHelp('Eficiência', 'Retorno em seguidores por cada postagem realizada no intervalo selecionado.')">?</button>
                 </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn btn-sm btn-toggle" id="btn_num_chartRatio" onclick="toggleChartLabels('chartRatio', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-toggle" onclick="toggleTableView('chartRatio', this, 'normal')">📊 Ver Tabela</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-sm btn-outline" id="btn_num_chartRatio" onclick="toggleChartLabels('chartRatio', this)">👁️ Mostrar Números</button>
+                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartRatio', this)">📊 Ver Tabela</button>
                 </div>
             </div>
             <div class="view-wrapper">
-                <div class="canvas-container fade-in" id="container_chartRatio">
+                <div class="canvas-container" id="container_chartRatio">
                     <canvas id="chartRatio"></canvas>
                 </div>
                 <div id="table_chartRatio" class="chart-table-container"></div>
             </div>
         </div>
 
-        <!-- 5. Seguidores por Candidato (Composição) -->
+        <!-- 5. Audiência por Rede -->
         <div class="card">
             <div class="card-header-flex">
                 <div class="title-area">
                     <h2>Composição da Audiência (Seguidores por Rede)</h2>
-                    <button class="btn-help" onclick="openHelp('Composição da Audiência', 'Tamanho e distribuição do público atual do candidato.<br><br><b>Cálculo Matemático aplicado na Planilha:</b><br><br>O sistema identifica a <b>última data cronológica registrada</b> para o candidato. A partir dessa data, extrai o valor exato apontado na coluna <b>&quot;Seguidores&quot;</b> quebrado por rede social (Instagram, FB, X, TikTok).<br><br>As barras exibem esses totais do último dia avaliado, mostrando como o público é dividido entre as redes.')">?</button>
+                    <button class="btn-help" onclick="openHelp('Composição', 'Muda a audiência com base no último dia do filtro de data.')">?</button>
                 </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn btn-sm btn-toggle" id="btn_num_chartFollowersDetail" onclick="toggleChartLabels('chartFollowersDetail', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-toggle" onclick="toggleTableView('chartFollowersDetail', this, 'normal')">📊 Ver Tabela</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-sm btn-outline" id="btn_num_chartFollowersDetail" onclick="toggleChartLabels('chartFollowersDetail', this)">👁️ Mostrar Números</button>
+                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartFollowersDetail', this)">📊 Ver Tabela</button>
                 </div>
             </div>
             <div class="view-wrapper">
-                <div class="canvas-container fade-in" id="container_chartFollowersDetail">
+                <div class="canvas-container" id="container_chartFollowersDetail">
                     <canvas id="chartFollowersDetail"></canvas>
                 </div>
                 <div id="table_chartFollowersDetail" class="chart-table-container"></div>
             </div>
         </div>
 
-        <!-- 6. Gráfico de Ganho Total -->
+        <!-- 6. Saldo Total -->
         <div class="card">
             <div class="card-header-flex">
                 <div class="title-area">
-                    <h2>Saldo Total de Ganho/Perda de Seguidores</h2>
-                    <button class="btn-help" onclick="openHelp('Saldo Total', 'Mostra o desempenho bruto de atração de fãs.<br><br><b>Cálculo Matemático aplicado na Planilha:</b><br><br>É a soma linear da coluna <b>&quot;CrescimentoDiario&quot;</b> para todas as datas cadastradas e para todas as 4 redes sociais monitoradas.<br><br>Ganhos (números positivos) são somados, perdas (números negativos de unfollows) são subtraídos do bolo. O tamanho final da barra é o resultado exato deste saldo líquido de toda a base.')">?</button>
+                    <h2>Saldo Total de Ganho/Perda no Período</h2>
+                    <button class="btn-help" onclick="openHelp('Saldo Total', 'Saldo líquido de seguidores somando todas as redes no período selecionado.')">?</button>
                 </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn btn-sm btn-toggle" id="btn_num_chartGrowthCand" onclick="toggleChartLabels('chartGrowthCand', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-toggle" onclick="toggleTableView('chartGrowthCand', this, 'normal')">📊 Ver Tabela</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-sm btn-outline" id="btn_num_chartGrowthCand" onclick="toggleChartLabels('chartGrowthCand', this)">👁️ Mostrar Números</button>
+                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartGrowthCand', this)">📊 Ver Tabela</button>
                 </div>
             </div>
             <div class="view-wrapper">
-                <div class="canvas-container fade-in" style="height: 500px;" id="container_chartGrowthCand">
+                <div class="canvas-container" style="height: 440px;" id="container_chartGrowthCand">
                     <canvas id="chartGrowthCand"></canvas>
                 </div>
                 <div id="table_chartGrowthCand" class="chart-table-container"></div>
@@ -286,32 +480,31 @@
 <script>
     Chart.register(ChartDataLabels);
 
+    // CORES CLÁSSICAS E ELEGANTES
+    const socialColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'TikTok': '#111827', 'X': '#374151' };
+    const partyColors = ['#1d4ed8', '#059669', '#dc2626', '#d97706', '#7c3aed', '#0891b2', '#db2777', '#475569'];
+
+    let rawData = [];
+    let filteredData = [];
     let charts = {};
     let labelStates = {
-        'chartEvolucaoLinha': false,
-        'chartFollowersDetail': false,
-        'chartRatio': false,
-        'chartGrowthCand': false,
-        'chartPosts': false
+        'chartEvolucaoLinha': false, 'chartFollowersDetail': false,
+        'chartRatio': false, 'chartGrowthCand': false, 'chartPosts': false
     };
-    
     let globalLatestMap = {};
+
+    // Estilos padrão do Chart.js para combinar com serifas
+    Chart.defaults.font.family = "'Lora', Georgia, serif";
+    Chart.defaults.color = '#0c1e38';
+    Chart.defaults.scale.grid.color = '#e2e8f0';
 
     function openHelp(title, text) {
         document.getElementById('helpTitle').innerText = title;
         document.getElementById('helpText').innerHTML = text;
         document.getElementById('helpModal').style.display = 'block';
     }
-    
     function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
     function closeHelpOnOutsideClick(event) { if (event.target === document.getElementById('helpModal')) closeHelp(); }
-
-    const candidateColors = [
-        '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', 
-        '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', 
-        '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', 
-        '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080'
-    ];
 
     function formatCompactNumber(number) {
         if (number === 0) return '';
@@ -321,7 +514,6 @@
     }
 
     Chart.defaults.set('plugins.datalabels', {
-        color: '#1e293b', font: { weight: 'bold', size: 11 },
         formatter: function(value) { return formatCompactNumber(value); },
         anchor: 'center', align: 'center'
     });
@@ -329,16 +521,10 @@
     function toggleChartLabels(chartId, btnElement) {
         labelStates[chartId] = !labelStates[chartId];
         charts[chartId].update();
-        if (labelStates[chartId]) {
-            btnElement.innerHTML = '👁️ Ocultar Números';
-            btnElement.style.backgroundColor = '#1d4ed8'; 
-        } else {
-            btnElement.innerHTML = '👁️ Mostrar Números';
-            btnElement.style.backgroundColor = '#475569'; 
-        }
+        btnElement.innerHTML = labelStates[chartId] ? '👁️ Ocultar Números' : '👁️ Mostrar Números';
     }
 
-    function toggleTableView(chartId, btnElement, sizeType) {
+    function toggleTableView(chartId, btnElement) {
         const tableDiv = document.getElementById('table_' + chartId);
         const chartContainer = document.getElementById('container_' + chartId);
         const numBtn = document.getElementById('btn_num_' + chartId);
@@ -346,25 +532,13 @@
         if (tableDiv.style.display === 'none' || tableDiv.style.display === '') {
             generateTableForChart(chartId, tableDiv);
             chartContainer.style.display = 'none';
-            
-            tableDiv.classList.remove('fade-in');
-            void tableDiv.offsetWidth; 
             tableDiv.style.display = 'block';
-            tableDiv.classList.add('fade-in');
-            
             btnElement.innerHTML = '📈 Ver Gráfico';
-            btnElement.style.backgroundColor = '#1d4ed8'; 
             if(numBtn) numBtn.style.display = 'none'; 
         } else {
             tableDiv.style.display = 'none';
-            
-            chartContainer.classList.remove('fade-in');
-            void chartContainer.offsetWidth; 
             chartContainer.style.display = 'block';
-            chartContainer.classList.add('fade-in');
-            
             btnElement.innerHTML = '📊 Ver Tabela';
-            btnElement.style.backgroundColor = '#475569'; 
             if(numBtn) numBtn.style.display = 'inline-flex'; 
         }
     }
@@ -372,79 +546,42 @@
     function generateTableForChart(chartId, container) {
         const chart = charts[chartId];
         if (!chart) return;
-        
         const labels = chart.data.labels;
         const datasets = chart.data.datasets;
-        
-        let html = '';
+        let html = '<table><thead><tr><th>Candidato</th>';
 
         if (chartId === 'chartEvolucaoLinha') {
-            html += `<table><thead><tr><th>Candidato</th>`;
             labels.forEach(label => { html += `<th>${label}</th>`; });
             html += `<th>Total Período</th></tr></thead><tbody>`;
-            
             datasets.forEach(ds => {
                 html += `<tr><td style="font-weight: 600;">${ds.label}</td>`;
                 let rowTotal = 0;
                 ds.data.forEach(val => {
-                    let displayVal = val;
+                    let displayVal = '-';
                     let classColor = 'neutral';
-                    
                     if (typeof val === 'number') {
                         rowTotal += val;
-                        displayVal = val.toLocaleString('pt-BR');
+                        displayVal = (val > 0 ? '+' : '') + val.toLocaleString('pt-BR');
                         classColor = val > 0 ? 'pos' : (val < 0 ? 'neg' : 'neutral');
-                        displayVal = (val > 0 ? '+' : '') + displayVal;
                     }
-                    if (val === null || val === undefined) displayVal = '-';
-                    
                     html += `<td class="${classColor}">${displayVal}</td>`;
                 });
-                
                 let classTotal = rowTotal > 0 ? 'pos' : (rowTotal < 0 ? 'neg' : 'neutral');
-                let displayTotal = (rowTotal > 0 ? '+' : '') + rowTotal.toLocaleString('pt-BR');
-                html += `<td class="${classTotal}">${displayTotal}</td>`;
-                html += `</tr>`;
+                html += `<td class="${classTotal}">${(rowTotal > 0 ? '+' : '') + rowTotal.toLocaleString('pt-BR')}</td></tr>`;
             });
-        } 
-        else {
-            html += `<table><thead><tr><th>Candidato</th>`;
+        } else {
             datasets.forEach(ds => { html += `<th>${ds.label}</th>`; });
-            
-            let showTotal = datasets.length > 1;
-            if (showTotal) html += `<th>Total Geral</th>`;
-            
             html += `</tr></thead><tbody>`;
-            
             labels.forEach((label, i) => {
                 html += `<tr><td style="font-weight: 600;">${label}</td>`;
-                let rowTotal = 0;
-                
                 datasets.forEach(ds => {
                     let val = ds.data[i];
-                    let displayVal = val;
-                    let classColor = 'neutral';
-                    
-                    if (typeof val === 'number') {
-                        rowTotal += val;
-                        displayVal = val.toLocaleString('pt-BR');
-                        if (chartId === 'chartGrowthCand') {
-                            classColor = val > 0 ? 'pos' : (val < 0 ? 'neg' : 'neutral');
-                            displayVal = (val > 0 ? '+' : '') + displayVal;
-                        }
-                    }
-                    if (val === null || val === undefined) { displayVal = '-'; }
-                    
-                    html += `<td class="${classColor}">${displayVal}</td>`;
+                    let displayVal = typeof val === 'number' ? val.toLocaleString('pt-BR') : '-';
+                    html += `<td>${displayVal}</td>`;
                 });
-                
-                if (showTotal) {
-                    html += `<td>${rowTotal.toLocaleString('pt-BR')}</td>`;
-                }
                 html += `</tr>`;
             });
         }
-
         html += `</tbody></table>`;
         container.innerHTML = html;
     }
@@ -452,34 +589,96 @@
     function formatDataBR(dateStr) {
         if(!dateStr) return '';
         let p = dateStr.split('-');
-        if(p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
-        return dateStr;
+        return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : dateStr;
+    }
+
+    /* FILTROS DE DATA & BADGE VISÍVEL */
+    function initDateInputs(dates) {
+        const sorted = Array.from(dates).sort();
+        if(sorted.length === 0) return;
+        
+        const minDate = sorted[0];
+        const maxDate = sorted[sorted.length - 1];
+
+        const startEl = document.getElementById('startDate');
+        const endEl = document.getElementById('endDate');
+
+        startEl.min = minDate; startEl.max = maxDate;
+        endEl.min = minDate; endEl.max = maxDate;
+
+        if(!startEl.value) startEl.value = minDate;
+        if(!endEl.value) endEl.value = maxDate;
+
+        updatePeriodBadge(startEl.value, endEl.value);
+    }
+
+    function updatePeriodBadge(startDate, endDate) {
+        const badge = document.getElementById('periodDisplayBadge');
+        if(startDate === endDate) {
+            badge.innerText = `${formatDataBR(startDate)}`;
+        } else {
+            badge.innerText = `${formatDataBR(startDate)} até ${formatDataBR(endDate)}`;
+        }
+    }
+
+    function applyDateFilter() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) return;
+
+        updatePeriodBadge(startDate, endDate);
+        filteredData = rawData.filter(row => row.Data >= startDate && row.Data <= endDate);
+        processData(filteredData);
+    }
+
+    function resetDateFilter() {
+        const dates = new Set(rawData.map(r => r.Data));
+        const sorted = Array.from(dates).sort();
+        if(sorted.length > 0) {
+            document.getElementById('startDate').value = sorted[0];
+            document.getElementById('endDate').value = sorted[sorted.length - 1];
+        }
+        applyDateFilter();
+    }
+
+    function setPresetDays(days) {
+        const dates = Array.from(new Set(rawData.map(r => r.Data))).sort();
+        if(dates.length === 0) return;
+        
+        const maxDate = new Date(dates[dates.length - 1]);
+        const minDate = new Date(maxDate);
+        minDate.setDate(minDate.getDate() - days);
+
+        const minStr = minDate.toISOString().split('T')[0];
+        const maxStr = maxDate.toISOString().split('T')[0];
+
+        document.getElementById('startDate').value = minStr < dates[0] ? dates[0] : minStr;
+        document.getElementById('endDate').value = maxStr;
+        applyDateFilter();
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        const arquivoRepositorio = 'dados.csv'; 
-
-        fetch(arquivoRepositorio)
-            .then(response => {
-                if (!response.ok) throw new Error('Arquivo não encontrado.');
-                return response.text();
-            })
+        fetch('dados.csv')
+            .then(res => res.ok ? res.text() : Promise.reject())
             .then(csvText => {
                 Papa.parse(csvText, {
                     header: true, skipEmptyLines: true,
                     complete: function(results) {
-                        processData(results.data);
+                        rawData = results.data;
+                        const datesSet = new Set(rawData.map(r => r.Data));
+                        initDateInputs(datesSet);
+                        processData(rawData);
                         document.getElementById('dashboardGrid').style.display = 'grid';
                         
                         const statusEl = document.getElementById('statusText');
-                        statusEl.innerText = `Lendo dados de "${arquivoRepositorio}" automaticamente!`;
-                        statusEl.style.backgroundColor = '#10b981';
-                        statusEl.style.color = 'white';
+                        statusEl.innerText = `Base conectada (${rawData.length} registros)`;
+                        statusEl.style.color = 'var(--secondary)';
                     }
                 });
             })
-            .catch(error => {
-                document.getElementById('statusText').innerText = 'Envie a base clicando no botão ao lado.';
+            .catch(() => {
+                document.getElementById('statusText').innerText = 'Aguardando arquivo CSV manual...';
             });
     });
 
@@ -487,20 +686,15 @@
         const file = event.target.files[0];
         if (!file) return;
 
-        document.getElementById('statusText').style.backgroundColor = 'transparent';
-        document.getElementById('statusText').style.color = 'var(--text-muted)';
-        document.getElementById('statusText').innerText = `Processando: ${file.name}...`;
-
         Papa.parse(file, {
             header: true, skipEmptyLines: true,
             complete: function(results) {
-                processData(results.data);
+                rawData = results.data;
+                const datesSet = new Set(rawData.map(r => r.Data));
+                initDateInputs(datesSet);
+                processData(rawData);
                 document.getElementById('dashboardGrid').style.display = 'grid';
-                
-                const statusEl = document.getElementById('statusText');
-                statusEl.innerText = `Dashboard Atualizado Manualmente!`;
-                statusEl.style.backgroundColor = '#10b981';
-                statusEl.style.color = 'white';
+                document.getElementById('statusText').innerText = `Base carregada: ${file.name}`;
             }
         });
     }
@@ -557,7 +751,7 @@
 
         let html = `<table><thead><tr><th>Candidato</th>`;
         sortedDates.forEach(d => { html += `<th>${formatDataBR(d)}</th>`; });
-        html += `<th>Saldo Período</th><th>Total Posts</th></tr></thead><tbody>`;
+        html += `<th style="background-color: var(--nav-navy); color:white;">Saldo Período</th><th>Total Posts</th></tr></thead><tbody>`;
 
         cands.forEach(cand => {
             html += `<tr><td style="font-weight: 600;">${cand}</td>`;
@@ -595,82 +789,44 @@
     }
 
     function renderCharts(fCand, gCand, pMap, evoGrowthMap, datesSet) {
-        const colors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'TikTok': '#25F4EE', 'X': '#000000' };
         const resetChart = (id) => { if(charts[id]) charts[id].destroy(); };
         let cands = Object.keys(fCand).sort((a,b) => fCand[b] - fCand[a]);
 
-        // 1. Gráfico de Linha (Evolução do Saldo)
+        // 1. Gráfico de Linha
         resetChart('chartEvolucaoLinha');
         const sortedDates = Array.from(datesSet).sort();
         const displayDates = sortedDates.map(d => formatDataBR(d));
         
-        const datasetsLine = cands.map((cand, idx) => {
-            const dataPts = sortedDates.map(d => evoGrowthMap[cand] && evoGrowthMap[cand][d] !== undefined ? evoGrowthMap[cand][d] : 0);
-            return {
-                label: cand,
-                data: dataPts,
-                borderColor: candidateColors[idx % candidateColors.length],
-                backgroundColor: candidateColors[idx % candidateColors.length],
-                tension: 0.3, borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: false
-            };
-        });
+        const datasetsLine = cands.map((cand, idx) => ({
+            label: cand,
+            data: sortedDates.map(d => evoGrowthMap[cand] && evoGrowthMap[cand][d] !== undefined ? evoGrowthMap[cand][d] : 0),
+            borderColor: partyColors[idx % partyColors.length],
+            backgroundColor: partyColors[idx % partyColors.length],
+            tension: 0.15, borderWidth: 2, pointRadius: 3
+        }));
 
         charts['chartEvolucaoLinha'] = new Chart(document.getElementById('chartEvolucaoLinha'), {
             type: 'line',
             data: { labels: displayDates, datasets: datasetsLine },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false }, 
                 plugins: {
                     datalabels: { 
-                        display: function(ctx) { return labelStates['chartEvolucaoLinha']; },
+                        display: (ctx) => labelStates['chartEvolucaoLinha'],
                         color: (ctx) => ctx.dataset.borderColor,
-                        backgroundColor: 'rgba(255,255,255,0.85)',
-                        borderRadius: 4,
-                        font: {weight: 'bold'},
-                        anchor: 'end',
-                        align: 'top',
-                        formatter: function(value) { return value === 0 ? '' : (value > 0 ? '+' : '') + formatCompactNumber(value); }
+                        anchor: 'end', align: 'top',
+                        formatter: (val) => val === 0 ? '' : (val > 0 ? '+' : '') + formatCompactNumber(val)
                     },
-                    legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-                                let val = context.parsed.y;
-                                if (val !== null) label += (val > 0 ? '+' : '') + val.toLocaleString('pt-BR');
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: { title: { display: true, text: 'Dias Monitorados', font: {weight: 'bold'} } },
-                    y: { 
-                        title: { display: true, text: 'Variação Diária (Ganho/Perda)', font: {weight: 'bold'} },
-                        ticks: { callback: function(value) { return formatCompactNumber(value); } }
-                    }
+                    legend: { position: 'bottom', labels: { usePointStyle: true } }
                 }
             }
         });
 
-        // 2. Posts Empilhados por Candidato
+        // 2. Posts Empilhados
         resetChart('chartPosts');
-        const dsPosts = Object.keys(colors).map(rede => ({
-            label: rede, data: cands.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), backgroundColor: colors[rede]
+        const dsPosts = Object.keys(socialColors).map(rede => ({
+            label: rede, data: cands.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), backgroundColor: socialColors[rede]
         }));
-        
-        const shouldShowStackedLabel = (ctx, chartId) => {
-            if (!labelStates[chartId]) return false;
-            const value = ctx.dataset.data[ctx.dataIndex];
-            if (value <= 0) return false;
-            let totalBar = 0;
-            ctx.chart.data.datasets.forEach(ds => { totalBar += ds.data[ctx.dataIndex] || 0; });
-            if (totalBar === 0) return false;
-            return (value / totalBar) > 0.07;
-        };
-
         charts['chartPosts'] = new Chart(document.getElementById('chartPosts'), {
             type: 'bar',
             data: { labels: cands, datasets: dsPosts },
@@ -679,26 +835,19 @@
                 scales: { x: { stacked: true }, y: { stacked: true } },
                 plugins: {
                     legend: { position: 'top' },
-                    datalabels: {
-                        color: 'white', textShadowBlur: 3, textShadowColor: '#000',
-                        display: (ctx) => shouldShowStackedLabel(ctx, 'chartPosts'),
-                        formatter: function(value) { return value; }
-                    }
+                    datalabels: { color: 'white', display: (ctx) => labelStates['chartPosts'] }
                 }
             }
         });
 
-        // 3. Gráfico de Eficiência (Razão: Ganho / Post)
+        // 3. Eficiência
         resetChart('chartRatio');
         let ratioDataArr = [];
         cands.forEach(cand => {
             let totalP = 0;
             for (let r in pMap[cand]) totalP += pMap[cand][r];
             let g = gCand[cand] || 0;
-            if (totalP > 0) {
-                let ratio = Math.round(g / totalP);
-                ratioDataArr.push({ cand: cand, ratio: ratio, color: ratio >= 0 ? '#10b981' : '#ef4444' });
-            }
+            if (totalP > 0 && g > 0) ratioDataArr.push({ cand: cand, ratio: Math.round(g / totalP) });
         });
         ratioDataArr.sort((a,b) => b.ratio - a.ratio);
 
@@ -706,40 +855,28 @@
             type: 'bar',
             data: {
                 labels: ratioDataArr.map(d => d.cand),
-                datasets: [{
-                    label: 'Seguidores Ganhos por Post',
-                    data: ratioDataArr.map(d => d.ratio),
-                    backgroundColor: ratioDataArr.map(d => d.color)
-                }]
+                datasets: [{ label: 'Seguidores por Post', data: ratioDataArr.map(d => d.ratio), backgroundColor: '#0c1e38' }]
             },
             options: {
-                indexAxis: 'y',
-                responsive: true, maintainAspectRatio: false,
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
                     datalabels: {
-                        display: function(ctx) { return labelStates['chartRatio']; },
-                        color: 'white', 
-                        textShadowBlur: 3,
-                        textShadowColor: '#000',
-                        anchor: 'end',
-                        align: 'left', 
-                        offset: 4,
-                        formatter: function(value) { return value.toLocaleString('pt-BR') + ' seg/post'; }
-                    },
-                    tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toLocaleString('pt-BR')} seguidores por publicação` } }
+                        display: (ctx) => labelStates['chartRatio'],
+                        color: '#0c1e38', anchor: 'end', align: 'right',
+                        formatter: (val) => val.toLocaleString('pt-BR') + ' seg/post'
+                    }
                 }
             }
         });
 
-        // 4. Seguidores de CADA Candidato (Empilhado)
+        // 4. Composição
         resetChart('chartFollowersDetail');
-        const dsFollowers = Object.keys(colors).map(rede => ({
+        const dsFollowers = Object.keys(socialColors).map(rede => ({
             label: rede,
             data: cands.map(c => globalLatestMap[c] && globalLatestMap[c][rede] ? globalLatestMap[c][rede].seguidores : 0),
-            backgroundColor: colors[rede]
+            backgroundColor: socialColors[rede]
         }));
-
         charts['chartFollowersDetail'] = new Chart(document.getElementById('chartFollowersDetail'), {
             type: 'bar',
             data: { labels: cands, datasets: dsFollowers },
@@ -748,11 +885,7 @@
                 scales: { x: { stacked: true }, y: { stacked: true } },
                 plugins: {
                     legend: { position: 'top' },
-                    datalabels: {
-                        color: 'white', textShadowBlur: 3, textShadowColor: '#000',
-                        display: (ctx) => shouldShowStackedLabel(ctx, 'chartFollowersDetail')
-                    },
-                    tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toLocaleString('pt-BR')} seguidores` } }
+                    datalabels: { color: 'white', display: (ctx) => labelStates['chartFollowersDetail'] }
                 }
             }
         });
@@ -769,25 +902,19 @@
                 datasets: [{ 
                     label: 'Saldo de Seguidores', 
                     data: growthDataArr.map(d => d.growth), 
-                    backgroundColor: growthDataArr.map(d => d.growth >= 0 ? '#10b981' : '#ef4444') 
+                    backgroundColor: growthDataArr.map(d => d.growth >= 0 ? '#0c1e38' : '#dc2626') 
                 }]
             },
             options: {
-                indexAxis: 'y',
-                responsive: true, maintainAspectRatio: false,
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
                     datalabels: {
-                        display: function(ctx) { return labelStates['chartGrowthCand']; },
-                        color: 'white', 
-                        textShadowBlur: 3,
-                        textShadowColor: '#000',
-                        anchor: 'end',
-                        align: (ctx) => ctx.dataset.data[ctx.dataIndex] < 0 ? 'right' : 'left', 
-                        offset: 6,
-                        formatter: function(value) { return value === 0 ? '' : value.toLocaleString('pt-BR'); }
-                    },
-                    tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toLocaleString('pt-BR')} seguidores` } }
+                        display: (ctx) => labelStates['chartGrowthCand'],
+                        color: (ctx) => ctx.dataset.data[ctx.dataIndex] >= 0 ? '#0c1e38' : '#dc2626',
+                        anchor: 'end', align: (ctx) => ctx.dataset.data[ctx.dataIndex] < 0 ? 'left' : 'right',
+                        formatter: (val) => val === 0 ? '' : (val > 0 ? '+' : '') + val.toLocaleString('pt-BR')
+                    }
                 }
             }
         });
