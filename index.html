@@ -246,7 +246,7 @@
         .view-wrapper { min-height: 440px; position: relative; }
         .view-wrapper-large { min-height: 490px; position: relative; }
 
-        /* TABELAS EM STILO REVISTA / RELATÓRIO */
+        /* TABELAS EM ESTILO REVISTA / RELATÓRIO */
         .table-container { overflow-x: auto; margin-top: 5px; }
         .chart-table-container { overflow-x: auto; margin-top: 10px; display: none; max-height: 440px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -335,7 +335,7 @@
     </div>
 
     <div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
-        <div id="statusText" class="status">Conectando à base de dados...</div>
+        <div id="statusText" class="status">Sincronizando com Google Sheets...</div>
     </div>
 
     <div class="dashboard-grid" id="dashboardGrid">
@@ -681,9 +681,12 @@
         applyDateFilter();
     }
 
+    // CARREGAMENTO AUTOMÁTICO DO GOOGLE SHEETS (Aba dados_csv)
     document.addEventListener("DOMContentLoaded", () => {
-        fetch('dados.csv')
-            .then(res => res.ok ? res.text() : Promise.reject())
+        const googleSheetsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQK8o6IOiRD91GnLm6AU_rOz7DsPpAWSEUSzMkGBvWRjwwvGg7Q8IFA4N41e6dqzMpDwTOIAqHjlCHB/pub?gid=1421984051&single=true&output=csv';
+
+        fetch(googleSheetsUrl)
+            .then(res => res.ok ? res.text() : Promise.reject(res))
             .then(csvText => {
                 Papa.parse(csvText, {
                     header: true, skipEmptyLines: true,
@@ -695,13 +698,14 @@
                         document.getElementById('dashboardGrid').style.display = 'grid';
                         
                         const statusEl = document.getElementById('statusText');
-                        statusEl.innerText = `Base conectada (${rawData.length} registros)`;
+                        statusEl.innerText = `Conectado via Google Sheets (${rawData.length} registros)`;
                         statusEl.style.color = 'var(--secondary)';
                     }
                 });
             })
-            .catch(() => {
-                document.getElementById('statusText').innerText = 'Aguardando arquivo CSV manual...';
+            .catch((err) => {
+                console.error("Erro ao sincronizar com Google Sheets:", err);
+                document.getElementById('statusText').innerText = 'Aguardando arquivo CSV manual ou erro no link...';
             });
     });
 
@@ -717,7 +721,7 @@
                 initDateInputs(datesSet);
                 processData(rawData);
                 document.getElementById('dashboardGrid').style.display = 'grid';
-                document.getElementById('statusText').innerText = `Base carregada: ${file.name}`;
+                document.getElementById('statusText').innerText = `Base manual carregada: ${file.name}`;
             }
         });
     }
@@ -815,7 +819,7 @@
         const resetChart = (id) => { if(charts[id]) charts[id].destroy(); };
         let cands = Object.keys(fCand).sort((a,b) => fCand[b] - fCand[a]);
 
-        // ORDENAÇÃO PELO INSTAGRAM: Maior audiência/posts no Instagram até o menor
+        // ORDENAÇÕES PELO INSTAGRAM
         let candsByInstaPosts = Object.keys(pMap).sort((a, b) => {
             let instaA = pMap[a] && pMap[a]['Instagram'] ? pMap[a]['Instagram'] : 0;
             let instaB = pMap[b] && pMap[b]['Instagram'] ? pMap[b]['Instagram'] : 0;
@@ -832,7 +836,7 @@
             return (fCand[b] || 0) - (fCand[a] || 0);
         });
 
-        // 1. Gráfico de Linha (Com as cores oficiais das candidaturas)
+        // 1. Gráfico de Linha (Cores Partidárias)
         resetChart('chartEvolucaoLinha');
         const sortedDates = Array.from(datesSet).sort();
         const displayDates = sortedDates.map(d => formatDataBR(d));
@@ -865,7 +869,7 @@
             }
         });
 
-        // 2. Volume de Publicações por Rede Social (Ordenado pelo maior publicador de Instagram)
+        // 2. Volume de Publicações por Rede Social (Ordenado pelo Instagram)
         resetChart('chartPosts');
         const dsPosts = Object.keys(socialColors).map(rede => ({
             label: rede, data: candsByInstaPosts.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), backgroundColor: socialColors[rede]
@@ -913,7 +917,7 @@
             }
         });
 
-        // 4. Composição da Audiência (Ordenado do maior para o menor no Instagram)
+        // 4. Composição da Audiência (Ordenado pelo Instagram)
         resetChart('chartFollowersDetail');
         const dsFollowers = Object.keys(socialColors).map(rede => ({
             label: rede,
