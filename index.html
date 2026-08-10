@@ -480,9 +480,32 @@
 <script>
     Chart.register(ChartDataLabels);
 
-    // CORES CLÁSSICAS E ELEGANTES
+    // CORES OFICIAIS DAS REDES SOCIAIS
     const socialColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'TikTok': '#111827', 'X': '#374151' };
-    const partyColors = ['#1d4ed8', '#059669', '#dc2626', '#d97706', '#7c3aed', '#0891b2', '#db2777', '#475569'];
+
+    // MAPA DE CORES OFICIAIS POR POLITICO/CANDIDATURA
+    const candidateColors = {
+        'Aldo Rebelo': '#f8ba2a',
+        'Augusto Cury': '#2EABB1',
+        'Cabo Daciolo': '#DD3333',
+        'Ciro Gomes': '#FE8E6D',
+        'Cláudio Castro': '#2e8b57',
+        'Edmilson Costa': '#a8231c',
+        'Eduardo Bolsonaro': '#015AAA',
+        'Eduardo Leite': '#0080FF',
+        'Flávio Bolsonaro': '#003366',
+        'Gusttavo Lima': '#6E6E6E',
+        'Helder Barbalho': '#00aa4f',
+        'Hertz Dias': '#c92127',
+        'Lula': '#c4122d',
+        'Michelle Bolsonaro': '#e384db',
+        'Ratinho Jr': '#FFA500',
+        'Romeu Zema': '#F3701B',
+        'Ronaldo Caiado': '#40ccff',
+        'Rui Costa Pimenta': '#9F030A',
+        'Samara Martins': '#000000',
+        'Tarcísio de Freitas': '#115E80'
+    };
 
     let rawData = [];
     let filteredData = [];
@@ -792,18 +815,38 @@
         const resetChart = (id) => { if(charts[id]) charts[id].destroy(); };
         let cands = Object.keys(fCand).sort((a,b) => fCand[b] - fCand[a]);
 
-        // 1. Gráfico de Linha
+        // ORDENAÇÃO PELO INSTAGRAM: Maior audiência/posts no Instagram até o menor
+        let candsByInstaPosts = Object.keys(pMap).sort((a, b) => {
+            let instaA = pMap[a] && pMap[a]['Instagram'] ? pMap[a]['Instagram'] : 0;
+            let instaB = pMap[b] && pMap[b]['Instagram'] ? pMap[b]['Instagram'] : 0;
+            if (instaB !== instaA) return instaB - instaA;
+            let totalA = Object.values(pMap[a] || {}).reduce((acc, curr) => acc + curr, 0);
+            let totalB = Object.values(pMap[b] || {}).reduce((acc, curr) => acc + curr, 0);
+            return totalB - totalA;
+        });
+
+        let candsByInstaFollowers = Object.keys(globalLatestMap).sort((a, b) => {
+            let instaA = globalLatestMap[a] && globalLatestMap[a]['Instagram'] ? globalLatestMap[a]['Instagram'].seguidores : 0;
+            let instaB = globalLatestMap[b] && globalLatestMap[b]['Instagram'] ? globalLatestMap[b]['Instagram'].seguidores : 0;
+            if (instaB !== instaA) return instaB - instaA;
+            return (fCand[b] || 0) - (fCand[a] || 0);
+        });
+
+        // 1. Gráfico de Linha (Com as cores oficiais das candidaturas)
         resetChart('chartEvolucaoLinha');
         const sortedDates = Array.from(datesSet).sort();
         const displayDates = sortedDates.map(d => formatDataBR(d));
         
-        const datasetsLine = cands.map((cand, idx) => ({
-            label: cand,
-            data: sortedDates.map(d => evoGrowthMap[cand] && evoGrowthMap[cand][d] !== undefined ? evoGrowthMap[cand][d] : 0),
-            borderColor: partyColors[idx % partyColors.length],
-            backgroundColor: partyColors[idx % partyColors.length],
-            tension: 0.15, borderWidth: 2, pointRadius: 3
-        }));
+        const datasetsLine = cands.map((cand) => {
+            const color = candidateColors[cand] || '#1d4ed8';
+            return {
+                label: cand,
+                data: sortedDates.map(d => evoGrowthMap[cand] && evoGrowthMap[cand][d] !== undefined ? evoGrowthMap[cand][d] : 0),
+                borderColor: color,
+                backgroundColor: color,
+                tension: 0.15, borderWidth: 2, pointRadius: 3
+            };
+        });
 
         charts['chartEvolucaoLinha'] = new Chart(document.getElementById('chartEvolucaoLinha'), {
             type: 'line',
@@ -822,14 +865,14 @@
             }
         });
 
-        // 2. Posts Empilhados
+        // 2. Volume de Publicações por Rede Social (Ordenado pelo maior publicador de Instagram)
         resetChart('chartPosts');
         const dsPosts = Object.keys(socialColors).map(rede => ({
-            label: rede, data: cands.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), backgroundColor: socialColors[rede]
+            label: rede, data: candsByInstaPosts.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), backgroundColor: socialColors[rede]
         }));
         charts['chartPosts'] = new Chart(document.getElementById('chartPosts'), {
             type: 'bar',
-            data: { labels: cands, datasets: dsPosts },
+            data: { labels: candsByInstaPosts, datasets: dsPosts },
             options: {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 scales: { x: { stacked: true }, y: { stacked: true } },
@@ -870,16 +913,16 @@
             }
         });
 
-        // 4. Composição
+        // 4. Composição da Audiência (Ordenado do maior para o menor no Instagram)
         resetChart('chartFollowersDetail');
         const dsFollowers = Object.keys(socialColors).map(rede => ({
             label: rede,
-            data: cands.map(c => globalLatestMap[c] && globalLatestMap[c][rede] ? globalLatestMap[c][rede].seguidores : 0),
+            data: candsByInstaFollowers.map(c => globalLatestMap[c] && globalLatestMap[c][rede] ? globalLatestMap[c][rede].seguidores : 0),
             backgroundColor: socialColors[rede]
         }));
         charts['chartFollowersDetail'] = new Chart(document.getElementById('chartFollowersDetail'), {
             type: 'bar',
-            data: { labels: cands, datasets: dsFollowers },
+            data: { labels: candsByInstaFollowers, datasets: dsFollowers },
             options: {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 scales: { x: { stacked: true }, y: { stacked: true } },
