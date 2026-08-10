@@ -89,6 +89,16 @@
             margin-top: 6px;
             font-style: italic;
         }
+        .header-update-info {
+            font-family: system-ui, sans-serif;
+            font-size: 0.82rem;
+            color: var(--nav-blue);
+            font-weight: 600;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
         /* FILTRO DE DATA ULTRA VISÍVEL */
         .period-highlight-box {
@@ -224,7 +234,12 @@
             box-shadow: 0 2px 8px rgba(12, 30, 56, 0.04); 
             border: 1px solid var(--border-color);
             border-top: 3px solid var(--nav-navy);
+            transition: box-shadow 0.2s ease;
         }
+        .card:hover {
+            box-shadow: 0 6px 18px rgba(12, 30, 56, 0.08);
+        }
+
         .card-header-flex {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
             flex-wrap: wrap; gap: 12px;
@@ -250,7 +265,7 @@
         .table-container { overflow-x: auto; margin-top: 5px; }
         .chart-table-container { overflow-x: auto; margin-top: 10px; display: none; max-height: 440px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; white-space: nowrap; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; white-space: nowrap; transition: background-color 0.15s ease; }
         th { 
             font-family: system-ui, sans-serif;
             background-color: #f8fafc; 
@@ -274,7 +289,7 @@
         }
         .modal-content {
             background-color: #ffffff; margin: 8% auto; padding: 35px; border-radius: 4px;
-            width: 90%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 90%; max-width: 580px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             border-top: 4px solid var(--nav-navy); color: var(--text-main);
             position: relative;
         }
@@ -303,6 +318,7 @@
             <span class="brand-badge">Presidenciáveis</span>
             <h1>Monitor Político & Eleitoral 2026</h1>
             <p class="header-subtitle">Relatório de Inteligência de Mídias Sociais e Desempenho Digital</p>
+            <p class="header-update-info">🔄 Atualizado de seg. à sex. uma vez ao dia</p>
         </div>
         
         <div>
@@ -419,7 +435,7 @@
             <div class="card-header-flex">
                 <div class="title-area">
                     <h2>Eficiência: Média de Seguidores Ganhos por Publicação</h2>
-                    <button class="btn-help" onclick="openHelp('Eficiência', 'Retorno em seguidores por cada postagem realizada no intervalo selecionado.')">?</button>
+                    <button class="btn-help" onclick="openHelp('Eficiência Digital', 'Mede o retorno do esforço de publicação do candidato no período.<br><br><b>Fórmula de cálculo:</b><br><code>Novos Seguidores Ganhos ÷ Total de Posts Realizados</code><br><br><b>Como interpretar?</b><br>• <b>Alta Eficiência (Barra Longa):</b> O candidato atrai muitos novos seguidores fazendo poucas postagens (alto engajamento/viralidade).<br>• <b>Baixa Eficiência (Barra Curta):</b> O candidato precisa publicar com frequência para alcançar algum retorno em novos seguidores.')">?</button>
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <button class="btn btn-sm btn-outline" id="btn_num_chartRatio" onclick="toggleChartLabels('chartRatio', this)">👁️ Mostrar Números</button>
@@ -480,31 +496,16 @@
 <script>
     Chart.register(ChartDataLabels);
 
-    // CORES OFICIAIS DAS REDES SOCIAIS
     const socialColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'TikTok': '#111827', 'X': '#374151' };
 
-    // MAPA DE CORES OFICIAIS POR POLITICO/CANDIDATURA
     const candidateColors = {
-        'Aldo Rebelo': '#f8ba2a',
-        'Augusto Cury': '#2EABB1',
-        'Cabo Daciolo': '#DD3333',
-        'Ciro Gomes': '#FE8E6D',
-        'Cláudio Castro': '#2e8b57',
-        'Edmilson Costa': '#a8231c',
-        'Eduardo Bolsonaro': '#015AAA',
-        'Eduardo Leite': '#0080FF',
-        'Flávio Bolsonaro': '#003366',
-        'Gusttavo Lima': '#6E6E6E',
-        'Helder Barbalho': '#00aa4f',
-        'Hertz Dias': '#c92127',
-        'Lula': '#c4122d',
-        'Michelle Bolsonaro': '#e384db',
-        'Ratinho Jr': '#FFA500',
-        'Romeu Zema': '#F3701B',
-        'Ronaldo Caiado': '#40ccff',
-        'Rui Costa Pimenta': '#9F030A',
-        'Samara Martins': '#000000',
-        'Tarcísio de Freitas': '#115E80'
+        'Aldo Rebelo': '#f8ba2a', 'Augusto Cury': '#2EABB1', 'Cabo Daciolo': '#DD3333',
+        'Ciro Gomes': '#FE8E6D', 'Cláudio Castro': '#2e8b57', 'Edmilson Costa': '#a8231c',
+        'Eduardo Bolsonaro': '#015AAA', 'Eduardo Leite': '#0080FF', 'Flávio Bolsonaro': '#003366',
+        'Gusttavo Lima': '#6E6E6E', 'Helder Barbalho': '#00aa4f', 'Hertz Dias': '#c92127',
+        'Lula': '#c4122d', 'Michelle Bolsonaro': '#e384db', 'Ratinho Jr': '#FFA500',
+        'Romeu Zema': '#F3701B', 'Ronaldo Caiado': '#40ccff', 'Rui Costa Pimenta': '#9F030A',
+        'Samara Martins': '#000000', 'Tarcísio de Freitas': '#115E80'
     };
 
     let rawData = [];
@@ -516,7 +517,13 @@
     };
     let globalLatestMap = {};
 
-    // Estilos padrão do Chart.js para combinar com serifas
+    // DESATIVA ANIMAÇÕES DE DESFOQUE/FADE NO HOVER
+    Chart.defaults.animation = false;
+    Chart.defaults.transitions = {
+        active: { animation: { duration: 0 } },
+        resize: { animation: { duration: 0 } }
+    };
+
     Chart.defaults.font.family = "'Lora', Georgia, serif";
     Chart.defaults.color = '#0c1e38';
     Chart.defaults.scale.grid.color = '#e2e8f0';
@@ -615,7 +622,6 @@
         return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : dateStr;
     }
 
-    /* FILTROS DE DATA & BADGE VISÍVEL */
     function initDateInputs(dates) {
         const sorted = Array.from(dates).sort();
         if(sorted.length === 0) return;
@@ -637,17 +643,12 @@
 
     function updatePeriodBadge(startDate, endDate) {
         const badge = document.getElementById('periodDisplayBadge');
-        if(startDate === endDate) {
-            badge.innerText = `${formatDataBR(startDate)}`;
-        } else {
-            badge.innerText = `${formatDataBR(startDate)} até ${formatDataBR(endDate)}`;
-        }
+        badge.innerText = (startDate === endDate) ? `${formatDataBR(startDate)}` : `${formatDataBR(startDate)} até ${formatDataBR(endDate)}`;
     }
 
     function applyDateFilter() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-
         if (!startDate || !endDate) return;
 
         updatePeriodBadge(startDate, endDate);
@@ -681,7 +682,6 @@
         applyDateFilter();
     }
 
-    // CARREGAMENTO AUTOMÁTICO DO GOOGLE SHEETS (Aba dados_csv)
     document.addEventListener("DOMContentLoaded", () => {
         const googleSheetsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQK8o6IOiRD91GnLm6AU_rOz7DsPpAWSEUSzMkGBvWRjwwvGg7Q8IFA4N41e6dqzMpDwTOIAqHjlCHB/pub?gid=1421984051&single=true&output=csv';
 
@@ -704,8 +704,8 @@
                 });
             })
             .catch((err) => {
-                console.error("Erro ao sincronizar com Google Sheets:", err);
-                document.getElementById('statusText').innerText = 'Aguardando arquivo CSV manual ou erro no link...';
+                console.error("Erro ao carregar dados:", err);
+                document.getElementById('statusText').innerText = 'Aguardando CSV manual...';
             });
     });
 
@@ -819,7 +819,6 @@
         const resetChart = (id) => { if(charts[id]) charts[id].destroy(); };
         let cands = Object.keys(fCand).sort((a,b) => fCand[b] - fCand[a]);
 
-        // ORDENAÇÕES PELO INSTAGRAM
         let candsByInstaPosts = Object.keys(pMap).sort((a, b) => {
             let instaA = pMap[a] && pMap[a]['Instagram'] ? pMap[a]['Instagram'] : 0;
             let instaB = pMap[b] && pMap[b]['Instagram'] ? pMap[b]['Instagram'] : 0;
@@ -836,7 +835,7 @@
             return (fCand[b] || 0) - (fCand[a] || 0);
         });
 
-        // 1. Gráfico de Linha (Cores Partidárias)
+        // 1. Gráfico de Linha
         resetChart('chartEvolucaoLinha');
         const sortedDates = Array.from(datesSet).sort();
         const displayDates = sortedDates.map(d => formatDataBR(d));
@@ -846,9 +845,13 @@
             return {
                 label: cand,
                 data: sortedDates.map(d => evoGrowthMap[cand] && evoGrowthMap[cand][d] !== undefined ? evoGrowthMap[cand][d] : 0),
-                borderColor: color,
+                borderColor: color, 
                 backgroundColor: color,
-                tension: 0.15, borderWidth: 2, pointRadius: 3
+                tension: 0.15, 
+                borderWidth: 2, 
+                pointRadius: 3,
+                hoverRadius: 6,
+                hoverBorderWidth: 3
             };
         });
 
@@ -856,7 +859,10 @@
             type: 'line',
             data: { labels: displayDates, datasets: datasetsLine },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true, 
+                maintainAspectRatio: false,
+                hover: { mode: 'nearest', intersect: true },
+                interaction: { mode: 'nearest', intersect: true },
                 plugins: {
                     datalabels: { 
                         display: (ctx) => labelStates['chartEvolucaoLinha'],
@@ -869,10 +875,12 @@
             }
         });
 
-        // 2. Volume de Publicações por Rede Social (Ordenado pelo Instagram)
+        // 2. Volume de Publicações por Rede Social
         resetChart('chartPosts');
         const dsPosts = Object.keys(socialColors).map(rede => ({
-            label: rede, data: candsByInstaPosts.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), backgroundColor: socialColors[rede]
+            label: rede, 
+            data: candsByInstaPosts.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), 
+            backgroundColor: socialColors[rede]
         }));
         charts['chartPosts'] = new Chart(document.getElementById('chartPosts'), {
             type: 'bar',
@@ -880,6 +888,7 @@
             options: {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 scales: { x: { stacked: true }, y: { stacked: true } },
+                hover: { mode: 'nearest', intersect: true },
                 plugins: {
                     legend: { position: 'top' },
                     datalabels: { color: 'white', display: (ctx) => labelStates['chartPosts'] }
@@ -902,10 +911,15 @@
             type: 'bar',
             data: {
                 labels: ratioDataArr.map(d => d.cand),
-                datasets: [{ label: 'Seguidores por Post', data: ratioDataArr.map(d => d.ratio), backgroundColor: '#0c1e38' }]
+                datasets: [{ 
+                    label: 'Seguidores por Post', 
+                    data: ratioDataArr.map(d => d.ratio), 
+                    backgroundColor: '#0c1e38' 
+                }]
             },
             options: {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                hover: { mode: 'nearest', intersect: true },
                 plugins: {
                     legend: { display: false },
                     datalabels: {
@@ -917,7 +931,7 @@
             }
         });
 
-        // 4. Composição da Audiência (Ordenado pelo Instagram)
+        // 4. Composição da Audiência
         resetChart('chartFollowersDetail');
         const dsFollowers = Object.keys(socialColors).map(rede => ({
             label: rede,
@@ -930,6 +944,7 @@
             options: {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 scales: { x: { stacked: true }, y: { stacked: true } },
+                hover: { mode: 'nearest', intersect: true },
                 plugins: {
                     legend: { position: 'top' },
                     datalabels: { color: 'white', display: (ctx) => labelStates['chartFollowersDetail'] }
@@ -954,6 +969,7 @@
             },
             options: {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                hover: { mode: 'nearest', intersect: true },
                 plugins: {
                     legend: { display: false },
                     datalabels: {
