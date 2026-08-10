@@ -17,15 +17,14 @@
     
     <style>
         :root {
-            --bg-color: #fbfcfd;          /* Fundo suave e nobre */
+            --bg-color: #fbfcfd;
             --card-bg: #ffffff;
             --border-color: #dbe2ea;
             --border-dark: #1e3a8a;
             
-            --text-main: #0c1e38;         /* Azul marinho quase preto */
+            --text-main: #0c1e38;
             --text-muted: #526071;
 
-            /* AZUL INSTITUCIONAL NAVIGATOR */
             --nav-blue: #1d4ed8;
             --nav-navy: #0c1e38;
             --nav-gold: #c59b27;
@@ -33,8 +32,8 @@
             --secondary: #059669; 
             --danger: #dc2626;    
 
-            --table-header-bg: #f1f5f9;
-            --table-row-hover: #f8fafc;
+            --table-header-bg: #f8fafc;
+            --table-row-hover: #f1f5f9;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -100,7 +99,7 @@
             gap: 6px;
         }
 
-        /* FILTRO DE DATA ULTRA VISÍVEL */
+        /* FILTRO DE DATA */
         .period-highlight-box {
             background: #f0f5ff;
             border: 1px solid #bfdbfe;
@@ -166,6 +165,47 @@
             background: transparent;
         }
 
+        /* NAVEGAÇÃO POR ABAS (TABS LIMPAS SEM BARRAS/SÍMBOLOS) */
+        .tabs-header-nav {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            white-space: nowrap;
+            gap: 10px;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE e Edge */
+        }
+        .tabs-header-nav::-webkit-scrollbar {
+            display: none; /* Chrome, Safari e Opera */
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            font-family: system-ui, sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover {
+            color: var(--nav-blue);
+        }
+
+        .tab-btn.active {
+            color: var(--nav-blue);
+            border-bottom: 3px solid var(--nav-blue);
+            font-weight: 700;
+        }
+
         /* BOTÕES EDITORIAIS */
         .btn {
             background-color: var(--nav-navy); 
@@ -224,8 +264,10 @@
             border: 1px solid var(--border-color);
         }
 
-        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 30px; display: none; }
-        
+        .dashboard-container { display: none; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         /* CARDS SERIFADOS E ELEGANTES */
         .card {
             background: var(--card-bg); 
@@ -234,12 +276,8 @@
             box-shadow: 0 2px 8px rgba(12, 30, 56, 0.04); 
             border: 1px solid var(--border-color);
             border-top: 3px solid var(--nav-navy);
-            transition: box-shadow 0.2s ease;
+            margin-bottom: 25px;
         }
-        .card:hover {
-            box-shadow: 0 6px 18px rgba(12, 30, 56, 0.08);
-        }
-
         .card-header-flex {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
             flex-wrap: wrap; gap: 12px;
@@ -255,17 +293,17 @@
             margin: 0; 
         }
         
-        .canvas-container { position: relative; height: 440px; width: 100%; }
-        .canvas-container-large { position: relative; height: 490px; width: 100%; }
+        .canvas-container { position: relative; height: 460px; width: 100%; }
+        .canvas-container-large { position: relative; height: 500px; width: 100%; }
 
-        .view-wrapper { min-height: 440px; position: relative; }
-        .view-wrapper-large { min-height: 490px; position: relative; }
+        .view-wrapper { min-height: 460px; position: relative; }
+        .view-wrapper-large { min-height: 500px; position: relative; }
 
         /* TABELAS EM ESTILO REVISTA / RELATÓRIO */
         .table-container { overflow-x: auto; margin-top: 5px; }
-        .chart-table-container { overflow-x: auto; margin-top: 10px; display: none; max-height: 440px; }
+        .chart-table-container { overflow-x: auto; margin-top: 10px; display: none; max-height: 460px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; white-space: nowrap; transition: background-color 0.15s ease; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; white-space: nowrap; }
         th { 
             font-family: system-ui, sans-serif;
             background-color: #f8fafc; 
@@ -318,7 +356,7 @@
             <span class="brand-badge">Presidenciáveis</span>
             <h1>Monitor Político & Eleitoral 2026</h1>
             <p class="header-subtitle">Relatório de Inteligência de Mídias Sociais e Desempenho Digital</p>
-            <p class="header-update-info">🔄 Atualizado de seg. à sex. uma vez ao dia</p>
+            <p class="header-update-info">🔄 Atualizado de segunda a sexta, uma vez ao dia</p>
         </div>
         
         <div>
@@ -354,142 +392,165 @@
         <div id="statusText" class="status">Sincronizando com Google Sheets...</div>
     </div>
 
-    <div class="dashboard-grid" id="dashboardGrid">
+    <div class="dashboard-container" id="dashboardContainer">
         
-        <!-- Tabela de Resumo -->
-        <div class="card">
-            <div class="card-header-flex">
-                <div class="title-area">
-                    <h2>Resumo Geral por Candidato</h2>
-                    <button class="btn-help" onclick="openHelp('Resumo Geral', 'Consolidado do período selecionado.<br><br><b>Métricas:</b><br>• <b>Total Seguidores:</b> Soma das redes no último dia do filtro.<br>• <b>Saldo:</b> Variação total de seguidores no intervalo.<br>• <b>Posts:</b> Publicações no período.')">?</button>
+        <!-- NAVEGAÇÃO EM ABAS -->
+        <div class="tabs-header-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-resumo', this)">Resumo Geral</button>
+            <button class="tab-btn" onclick="switchTab('tab-evolucao', this)">Variação Diária de Seguidores</button>
+            <button class="tab-btn" onclick="switchTab('tab-matriz', this)">Saldo de seguidores por dia</button>
+            <button class="tab-btn" onclick="switchTab('tab-posts', this)">Publicações por rede social</button>
+            <button class="tab-btn" onclick="switchTab('tab-eficiencia', this)">Eficiência</button>
+            <button class="tab-btn" onclick="switchTab('tab-composicao', this)">Seguidores por rede social</button>
+        </div>
+
+        <!-- ABA 1: RESUMO GERAL -->
+        <div id="tab-resumo" class="tab-content active">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="title-area">
+                        <h2>Resumo Geral por Candidato</h2>
+                        <button class="btn-help" onclick="openHelp('Resumo Geral', 'Consolidado do período selecionado.<br><br><b>Métricas:</b><br>• <b>Total Seguidores:</b> Soma das redes no último dia do filtro.<br>• <b>Saldo:</b> Variação total de seguidores no intervalo.<br>• <b>Posts:</b> Publicações no período.')">?</button>
+                    </div>
                 </div>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Candidato</th>
-                            <th>Total Seguidores (Final do Período)</th>
-                            <th>Saldo de Ganho/Perda</th>
-                            <th>Total de Posts</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Candidato</th>
+                                <th>Total Seguidores (Final do Período)</th>
+                                <th>Saldo de Ganho/Perda</th>
+                                <th>Total de Posts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- 1. GRÁFICO DE LINHA: Evolução Diária -->
-        <div class="card">
-            <div class="card-header-flex">
-                <div class="title-area">
-                    <h2>Evolução Temporal: Variação Diária de Seguidores</h2>
-                    <button class="btn-help" onclick="openHelp('Evolução Temporal', 'Mede a oscilação de novos seguidores dia a dia no intervalo filtrado.')">?</button>
+        <!-- ABA 2: VARIAÇÃO DIÁRIA DE SEGUIDORES -->
+        <div id="tab-evolucao" class="tab-content">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="title-area">
+                        <h2>Variação Diária de Seguidores</h2>
+                        <button class="btn-help" onclick="openHelp('Variação Diária de Seguidores', 'Mede a oscilação de novos seguidores dia a dia no intervalo filtrado.<br><br><b>Nota:</b> A variação de <b>segunda-feira considera o acumulado do final de semana</b> (sábado, domingo e segunda).')">?</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline" id="btn_num_chartEvolucaoLinha" onclick="toggleChartLabels('chartEvolucaoLinha', this)">👁️ Mostrar Números</button>
+                        <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartEvolucaoLinha', this)">📊 Ver Tabela</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm btn-outline" id="btn_num_chartEvolucaoLinha" onclick="toggleChartLabels('chartEvolucaoLinha', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartEvolucaoLinha', this)">📊 Ver Tabela</button>
+                <div class="view-wrapper-large">
+                    <div class="canvas-container-large" id="container_chartEvolucaoLinha">
+                        <canvas id="chartEvolucaoLinha"></canvas>
+                    </div>
+                    <div id="table_chartEvolucaoLinha" class="chart-table-container"></div>
                 </div>
-            </div>
-            <div class="view-wrapper-large">
-                <div class="canvas-container-large" id="container_chartEvolucaoLinha">
-                    <canvas id="chartEvolucaoLinha"></canvas>
-                </div>
-                <div id="table_chartEvolucaoLinha" class="chart-table-container"></div>
             </div>
         </div>
 
-        <!-- 2. Volume de Publicações -->
-        <div class="card">
-            <div class="card-header-flex">
-                <div class="title-area">
-                    <h2>Volume de Publicações por Rede Social</h2>
-                    <button class="btn-help" onclick="openHelp('Volume de Publicações', 'Quantidade total de posts por plataforma no período.')">?</button>
+        <!-- ABA 3: SALDO DE SEGUIDORES POR DIA (Matriz Diária + Saldo Total no Topo) -->
+        <div id="tab-matriz" class="tab-content">
+            <!-- Gráfico de Saldo Total (Posicionado como a primeira informação) -->
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="title-area">
+                        <h2>Saldo Total de Ganho/Perda no Período</h2>
+                        <button class="btn-help" onclick="openHelp('Saldo Total', 'Saldo líquido de seguidores somando todas as redes no período selecionado.')">?</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline" id="btn_num_chartGrowthCand" onclick="toggleChartLabels('chartGrowthCand', this)">👁️ Mostrar Números</button>
+                        <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartGrowthCand', this)">📊 Ver Tabela</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm btn-outline" id="btn_num_chartPosts" onclick="toggleChartLabels('chartPosts', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartPosts', this)">📊 Ver Tabela</button>
+                <div class="view-wrapper">
+                    <div class="canvas-container" style="height: 460px;" id="container_chartGrowthCand">
+                        <canvas id="chartGrowthCand"></canvas>
+                    </div>
+                    <div id="table_chartGrowthCand" class="chart-table-container"></div>
                 </div>
             </div>
-            <div class="view-wrapper">
-                <div class="canvas-container" id="container_chartPosts">
-                    <canvas id="chartPosts"></canvas>
+
+            <!-- Tabela de Matriz Diária -->
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="title-area">
+                        <h2>Saldo de seguidores por dia (Matriz Detalhada)</h2>
+                        <button class="btn-help" onclick="openHelp('Saldo de Seguidores por Dia', 'Detalhamento numérico do crescimento diário no período selecionado.')">?</button>
+                    </div>
                 </div>
-                <div id="table_chartPosts" class="chart-table-container"></div>
+                <div style="overflow-x: auto;" id="dailyVariationTableContainer"></div>
             </div>
         </div>
 
-        <!-- 3. Tabela Matriz -->
-        <div class="card">
-            <div class="card-header-flex">
-                <div class="title-area">
-                    <h2>Matriz de Variação Diária (Novos Seguidores)</h2>
-                    <button class="btn-help" onclick="openHelp('Matriz Diária', 'Detalhamento numérico do crescimento diário do período.')">?</button>
+        <!-- ABA 4: PUBLICAÇÕES POR REDE SOCIAL -->
+        <div id="tab-posts" class="tab-content">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="title-area">
+                        <h2>Publicações por rede social</h2>
+                        <button class="btn-help" onclick="openHelp('Volume de Publicações', 'Quantidade total de posts por plataforma no período.')">?</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline" id="btn_num_chartPosts" onclick="toggleChartLabels('chartPosts', this)">👁️ Mostrar Números</button>
+                        <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartPosts', this)">📊 Ver Tabela</button>
+                    </div>
                 </div>
-            </div>
-            <div style="overflow-x: auto;" id="dailyVariationTableContainer"></div>
-        </div>
-
-        <!-- 4. Eficiência -->
-        <div class="card">
-            <div class="card-header-flex">
-                <div class="title-area">
-                    <h2>Eficiência: Média de Seguidores Ganhos por Publicação</h2>
-                    <button class="btn-help" onclick="openHelp('Eficiência Digital', 'Mede o retorno do esforço de publicação do candidato no período.<br><br><b>Fórmula de cálculo:</b><br><code>Novos Seguidores Ganhos ÷ Total de Posts Realizados</code><br><br><b>Como interpretar?</b><br>• <b>Alta Eficiência (Barra Longa):</b> O candidato atrai muitos novos seguidores fazendo poucas postagens (alto engajamento/viralidade).<br>• <b>Baixa Eficiência (Barra Curta):</b> O candidato precisa publicar com frequência para alcançar algum retorno em novos seguidores.')">?</button>
+                <div class="view-wrapper">
+                    <div class="canvas-container" id="container_chartPosts">
+                        <canvas id="chartPosts"></canvas>
+                    </div>
+                    <div id="table_chartPosts" class="chart-table-container"></div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm btn-outline" id="btn_num_chartRatio" onclick="toggleChartLabels('chartRatio', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartRatio', this)">📊 Ver Tabela</button>
-                </div>
-            </div>
-            <div class="view-wrapper">
-                <div class="canvas-container" id="container_chartRatio">
-                    <canvas id="chartRatio"></canvas>
-                </div>
-                <div id="table_chartRatio" class="chart-table-container"></div>
             </div>
         </div>
 
-        <!-- 5. Audiência por Rede -->
-        <div class="card">
-            <div class="card-header-flex">
-                <div class="title-area">
-                    <h2>Composição da Audiência (Seguidores por Rede)</h2>
-                    <button class="btn-help" onclick="openHelp('Composição', 'Muda a audiência com base no último dia do filtro de data.')">?</button>
+        <!-- ABA 5: EFICIÊNCIA -->
+        <div id="tab-eficiencia" class="tab-content">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="title-area">
+                        <h2>Eficiência: Média de Seguidores Ganhos por Publicação</h2>
+                        <button class="btn-help" onclick="openHelp('Eficiência Digital', 'Mede o retorno do esforço de publicação do candidato no período.<br><br><b>Fórmula de cálculo:</b><br><code>Novos Seguidores Ganhos ÷ Total de Posts Realizados</code><br><br><b>Como interpretar?</b><br>• <b>Alta Eficiência (Barra Longa):</b> O candidato atrai muitos novos seguidores fazendo poucas postagens (alto engajamento/viralidade).<br>• <b>Baixa Eficiência (Barra Curta):</b> O candidato precisa publicar com frequência para alcançar algum retorno em novos seguidores.')">?</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline" id="btn_num_chartRatio" onclick="toggleChartLabels('chartRatio', this)">👁️ Mostrar Números</button>
+                        <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartRatio', this)">📊 Ver Tabela</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm btn-outline" id="btn_num_chartFollowersDetail" onclick="toggleChartLabels('chartFollowersDetail', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartFollowersDetail', this)">📊 Ver Tabela</button>
+                <div class="view-wrapper">
+                    <div class="canvas-container" id="container_chartRatio">
+                        <canvas id="chartRatio"></canvas>
+                    </div>
+                    <div id="table_chartRatio" class="chart-table-container"></div>
                 </div>
-            </div>
-            <div class="view-wrapper">
-                <div class="canvas-container" id="container_chartFollowersDetail">
-                    <canvas id="chartFollowersDetail"></canvas>
-                </div>
-                <div id="table_chartFollowersDetail" class="chart-table-container"></div>
             </div>
         </div>
 
-        <!-- 6. Saldo Total -->
-        <div class="card">
-            <div class="card-header-flex">
-                <div class="title-area">
-                    <h2>Saldo Total de Ganho/Perda no Período</h2>
-                    <button class="btn-help" onclick="openHelp('Saldo Total', 'Saldo líquido de seguidores somando todas as redes no período selecionado.')">?</button>
+        <!-- ABA 6: SEGUIDORES POR REDE SOCIAL -->
+        <div id="tab-composicao" class="tab-content">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="title-area">
+                        <h2>Seguidores por rede social</h2>
+                        <button class="btn-help" onclick="openHelp('Composição', 'Muda a audiência com base no último dia do filtro de data.')">?</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline" id="btn_num_chartFollowersDetail" onclick="toggleChartLabels('chartFollowersDetail', this)">👁️ Mostrar Números</button>
+                        <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartFollowersDetail', this)">📊 Ver Tabela</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm btn-outline" id="btn_num_chartGrowthCand" onclick="toggleChartLabels('chartGrowthCand', this)">👁️ Mostrar Números</button>
-                    <button class="btn btn-sm btn-outline" onclick="toggleTableView('chartGrowthCand', this)">📊 Ver Tabela</button>
+                <div class="view-wrapper">
+                    <div class="canvas-container" id="container_chartFollowersDetail">
+                        <canvas id="chartFollowersDetail"></canvas>
+                    </div>
+                    <div id="table_chartFollowersDetail" class="chart-table-container"></div>
                 </div>
-            </div>
-            <div class="view-wrapper">
-                <div class="canvas-container" style="height: 440px;" id="container_chartGrowthCand">
-                    <canvas id="chartGrowthCand"></canvas>
-                </div>
-                <div id="table_chartGrowthCand" class="chart-table-container"></div>
             </div>
         </div>
-        
+
     </div>
 </div>
 
@@ -517,7 +578,6 @@
     };
     let globalLatestMap = {};
 
-    // DESATIVA ANIMAÇÕES DE DESFOQUE/FADE NO HOVER
     Chart.defaults.animation = false;
     Chart.defaults.transitions = {
         active: { animation: { duration: 0 } },
@@ -527,6 +587,18 @@
     Chart.defaults.font.family = "'Lora', Georgia, serif";
     Chart.defaults.color = '#0c1e38';
     Chart.defaults.scale.grid.color = '#e2e8f0';
+
+    function switchTab(tabId, btnElement) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        btnElement.classList.add('active');
+
+        Object.keys(charts).forEach(id => {
+            if (charts[id]) charts[id].resize();
+        });
+    }
 
     function openHelp(title, text) {
         document.getElementById('helpTitle').innerText = title;
@@ -695,7 +767,7 @@
                         const datesSet = new Set(rawData.map(r => r.Data));
                         initDateInputs(datesSet);
                         processData(rawData);
-                        document.getElementById('dashboardGrid').style.display = 'grid';
+                        document.getElementById('dashboardContainer').style.display = 'block';
                         
                         const statusEl = document.getElementById('statusText');
                         statusEl.innerText = `Conectado via Google Sheets (${rawData.length} registros)`;
@@ -720,7 +792,7 @@
                 const datesSet = new Set(rawData.map(r => r.Data));
                 initDateInputs(datesSet);
                 processData(rawData);
-                document.getElementById('dashboardGrid').style.display = 'grid';
+                document.getElementById('dashboardContainer').style.display = 'block';
                 document.getElementById('statusText').innerText = `Base manual carregada: ${file.name}`;
             }
         });
@@ -819,10 +891,8 @@
         const resetChart = (id) => { if(charts[id]) charts[id].destroy(); };
         let cands = Object.keys(fCand).sort((a,b) => fCand[b] - fCand[a]);
 
-        let candsByInstaPosts = Object.keys(pMap).sort((a, b) => {
-            let instaA = pMap[a] && pMap[a]['Instagram'] ? pMap[a]['Instagram'] : 0;
-            let instaB = pMap[b] && pMap[b]['Instagram'] ? pMap[b]['Instagram'] : 0;
-            if (instaB !== instaA) return instaB - instaA;
+        // ORDENAÇÃO DE POSTS PELA SOMA TOTAL DE PUBLICAÇÕES DE CADA CANDIDATO
+        let candsByTotalPosts = Object.keys(pMap).sort((a, b) => {
             let totalA = Object.values(pMap[a] || {}).reduce((acc, curr) => acc + curr, 0);
             let totalB = Object.values(pMap[b] || {}).reduce((acc, curr) => acc + curr, 0);
             return totalB - totalA;
@@ -875,16 +945,16 @@
             }
         });
 
-        // 2. Volume de Publicações por Rede Social
+        // 2. Volume de Publicações por Rede Social (Ordenado pela Soma Total de Posts)
         resetChart('chartPosts');
         const dsPosts = Object.keys(socialColors).map(rede => ({
             label: rede, 
-            data: candsByInstaPosts.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), 
+            data: candsByTotalPosts.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), 
             backgroundColor: socialColors[rede]
         }));
         charts['chartPosts'] = new Chart(document.getElementById('chartPosts'), {
             type: 'bar',
-            data: { labels: candsByInstaPosts, datasets: dsPosts },
+            data: { labels: candsByTotalPosts, datasets: dsPosts },
             options: {
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                 scales: { x: { stacked: true }, y: { stacked: true } },
