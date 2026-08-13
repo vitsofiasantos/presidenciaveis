@@ -557,7 +557,9 @@
 <script>
     Chart.register(ChartDataLabels);
 
-    const socialColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'TikTok': '#111827', 'X': '#374151' };
+    // Dicionários de Cores específicos por tipo de gráfico
+    const postColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'YouTube': '#FF0000', 'X': '#374151' };
+    const followerColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'TikTok': '#111827', 'X': '#374151' };
 
     const candidateColors = {
         'Aldo Rebelo': '#f8ba2a', 'Augusto Cury': '#2EABB1', 'Cabo Daciolo': '#DD3333',
@@ -945,12 +947,12 @@
             }
         });
 
-        // 2. Volume de Publicações por Rede Social (Ordenado pela Soma Total de Posts)
+        // 2. Volume de Publicações por Rede Social (Considera YouTube, Desconsidera TikTok)
         resetChart('chartPosts');
-        const dsPosts = Object.keys(socialColors).map(rede => ({
+        const dsPosts = Object.keys(postColors).map(rede => ({
             label: rede, 
             data: candsByTotalPosts.map(c => pMap[c] && pMap[c][rede] ? pMap[c][rede] : 0), 
-            backgroundColor: socialColors[rede]
+            backgroundColor: postColors[rede]
         }));
         charts['chartPosts'] = new Chart(document.getElementById('chartPosts'), {
             type: 'bar',
@@ -1001,12 +1003,12 @@
             }
         });
 
-        // 4. Composição da Audiência
+        // 4. Composição da Audiência (Considera TikTok, Desconsidera YouTube)
         resetChart('chartFollowersDetail');
-        const dsFollowers = Object.keys(socialColors).map(rede => ({
+        const dsFollowers = Object.keys(followerColors).map(rede => ({
             label: rede,
             data: candsByInstaFollowers.map(c => globalLatestMap[c] && globalLatestMap[c][rede] ? globalLatestMap[c][rede].seguidores : 0),
-            backgroundColor: socialColors[rede]
+            backgroundColor: followerColors[rede]
         }));
         charts['chartFollowersDetail'] = new Chart(document.getElementById('chartFollowersDetail'), {
             type: 'bar',
