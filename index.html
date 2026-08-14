@@ -165,7 +165,7 @@
             background: transparent;
         }
 
-        /* NAVEGAÇÃO POR ABAS (TABS LIMPAS SEM BARRAS/SÍMBOLOS) */
+        /* NAVEGAÇÃO POR ABAS */
         .tabs-header-nav {
             display: flex;
             align-items: center;
@@ -174,11 +174,11 @@
             overflow-x: auto;
             white-space: nowrap;
             gap: 10px;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE e Edge */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
         .tabs-header-nav::-webkit-scrollbar {
-            display: none; /* Chrome, Safari e Opera */
+            display: none;
         }
 
         .tab-btn {
@@ -268,7 +268,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* CARDS SERIFADOS E ELEGANTES */
+        /* CARDS */
         .card {
             background: var(--card-bg); 
             padding: 28px; 
@@ -299,7 +299,7 @@
         .view-wrapper { min-height: 460px; position: relative; }
         .view-wrapper-large { min-height: 500px; position: relative; }
 
-        /* TABELAS EM ESTILO REVISTA / RELATÓRIO */
+        /* TABELAS */
         .table-container { overflow-x: auto; margin-top: 5px; }
         .chart-table-container { overflow-x: auto; margin-top: 10px; display: none; max-height: 460px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -451,9 +451,8 @@
             </div>
         </div>
 
-        <!-- ABA 3: SALDO DE SEGUIDORES POR DIA (Matriz Diária + Saldo Total no Topo) -->
+        <!-- ABA 3: SALDO DE SEGUIDORES POR DIA -->
         <div id="tab-matriz" class="tab-content">
-            <!-- Gráfico de Saldo Total (Posicionado como a primeira informação) -->
             <div class="card">
                 <div class="card-header-flex">
                     <div class="title-area">
@@ -473,7 +472,6 @@
                 </div>
             </div>
 
-            <!-- Tabela de Matriz Diária -->
             <div class="card">
                 <div class="card-header-flex">
                     <div class="title-area">
@@ -513,7 +511,7 @@
                 <div class="card-header-flex">
                     <div class="title-area">
                         <h2>Eficiência: Média de Seguidores Ganhos por Publicação</h2>
-                        <button class="btn-help" onclick="openHelp('Eficiência Digital', 'Mede o retorno do esforço de publicação do candidato no período.<br><br><b>Fórmula de cálculo:</b><br><code>Novos Seguidores Ganhos ÷ Total de Posts Realizados</code><br><br><b>Como interpretar?</b><br>• <b>Alta Eficiência (Barra Longa):</b> O candidato atrai muitos novos seguidores fazendo poucas postagens (alto engajamento/viralidade).<br>• <b>Baixa Eficiência (Barra Curta):</b> O candidato precisa publicar com frequência para alcançar algum retorno em novos seguidores.')">?</button>
+                        <button class="btn-help" onclick="openHelp('Eficiência Digital', 'Mede o retorno do esforço de publicação do candidato no período.<br><br><b>Fórmula de cálculo:</b><br><code>Novos Seguidores Ganhos ÷ Total de Posts Realizados</code>')">?</button>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-sm btn-outline" id="btn_num_chartRatio" onclick="toggleChartLabels('chartRatio', this)">👁️ Mostrar Números</button>
@@ -557,19 +555,58 @@
 <script>
     Chart.register(ChartDataLabels);
 
-    // Dicionários de Cores específicos por tipo de gráfico
     const postColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'YouTube': '#FF0000', 'X': '#374151' };
     const followerColors = { 'Instagram': '#E1306C', 'Facebook': '#1877F2', 'TikTok': '#111827', 'X': '#374151' };
 
+    // Dicionário de Cores alinhado aos partidos
     const candidateColors = {
-        'Aldo Rebelo': '#f8ba2a', 'Augusto Cury': '#2EABB1', 'Cabo Daciolo': '#DD3333',
-        'Ciro Gomes': '#FE8E6D', 'Cláudio Castro': '#2e8b57', 'Edmilson Costa': '#a8231c',
-        'Eduardo Bolsonaro': '#015AAA', 'Eduardo Leite': '#0080FF', 'Flávio Bolsonaro': '#003366',
-        'Gusttavo Lima': '#6E6E6E', 'Helder Barbalho': '#00aa4f', 'Hertz Dias': '#c92127',
-        'Lula': '#c4122d', 'Michelle Bolsonaro': '#e384db', 'Ratinho Jr': '#FFA500',
-        'Romeu Zema': '#F3701B', 'Ronaldo Caiado': '#40ccff', 'Rui Costa Pimenta': '#9F030A',
-        'Samara Martins': '#000000', 'Tarcísio de Freitas': '#115E80'
+        'Aldo Rebelo': '#f8ba2a',           // DC
+        'Clariana Barão': '#f8ba2a',        // DC
+        'Augusto Cury': '#2EABB1',          // AVANTE
+        'Escritor Augusto Cury': '#2EABB1', // AVANTE
+        'Cabo Daciolo': '#DD3333',          // MOBILIZA
+        'Ciro Gomes': '#FE8E6D',            // PDT
+        'Cláudio Castro': '#2e8b57',        // PL4
+        'Edmilson Costa': '#a8231c',        // PCB
+        'Eduardo Bolsonaro': '#015AAA',     // PL
+        'Eduardo Leite': '#0080FF',         // PSDB
+        'Flávio Bolsonaro': '#003366',      // PL3
+        'Gusttavo Lima': '#6E6E6E',         // SEM PARTIDO
+        'Helder Barbalho': '#00aa4f',       // MDB
+        'Hertz Dias': '#c92127',            // PSTU
+        'Leonardo Avalanche': '#2e8b57',    // PRTB
+        'Lula': '#c4122d',                  // PT
+        'Michelle Bolsonaro': '#e384db',    // PL 2
+        'Ratinho Jr': '#FFA500',            // PSD
+        'Renan Santos': '#205493',          // MISSÃO
+        'Romeu Zema': '#F3701B',            // NOVO
+        'Zema': '#F3701B',                  // NOVO
+        'Ronaldo Caiado': '#40ccff',        // UNIÃO / PSD
+        'Rui Costa Pimenta': '#9F030A',     // PCO
+        'Samara Martins': '#000000',        // UP
+        'Samara': '#000000',                // UP
+        'Tarcísio de Freitas': '#115E80',    // REPUBLICANOS
+        'Veterinário Wilson Grassi': '#003366', // DEMOCRATA
+        'Wilson Grassi': '#003366'
     };
+
+    // Função para identificar a cor correta ignorando partidos entre parênteses
+    function getCandidateColor(candName) {
+        if (!candName) return '#1d4ed8';
+        
+        if (candidateColors[candName]) return candidateColors[candName];
+
+        const cleanName = candName.replace(/\s*\([^)]*\)/g, '').trim();
+        if (candidateColors[cleanName]) return candidateColors[cleanName];
+
+        for (let key in candidateColors) {
+            if (candName.toLowerCase().includes(key.toLowerCase())) {
+                return candidateColors[key];
+            }
+        }
+
+        return '#1d4ed8';
+    }
 
     let rawData = [];
     let filteredData = [];
@@ -893,7 +930,6 @@
         const resetChart = (id) => { if(charts[id]) charts[id].destroy(); };
         let cands = Object.keys(fCand).sort((a,b) => fCand[b] - fCand[a]);
 
-        // ORDENAÇÃO DE POSTS PELA SOMA TOTAL DE PUBLICAÇÕES DE CADA CANDIDATO
         let candsByTotalPosts = Object.keys(pMap).sort((a, b) => {
             let totalA = Object.values(pMap[a] || {}).reduce((acc, curr) => acc + curr, 0);
             let totalB = Object.values(pMap[b] || {}).reduce((acc, curr) => acc + curr, 0);
@@ -913,7 +949,7 @@
         const displayDates = sortedDates.map(d => formatDataBR(d));
         
         const datasetsLine = cands.map((cand) => {
-            const color = candidateColors[cand] || '#1d4ed8';
+            const color = getCandidateColor(cand);
             return {
                 label: cand,
                 data: sortedDates.map(d => evoGrowthMap[cand] && evoGrowthMap[cand][d] !== undefined ? evoGrowthMap[cand][d] : 0),
@@ -947,7 +983,7 @@
             }
         });
 
-        // 2. Volume de Publicações por Rede Social (Considera YouTube, Desconsidera TikTok)
+        // 2. Volume de Publicações
         resetChart('chartPosts');
         const dsPosts = Object.keys(postColors).map(rede => ({
             label: rede, 
@@ -986,7 +1022,7 @@
                 datasets: [{ 
                     label: 'Seguidores por Post', 
                     data: ratioDataArr.map(d => d.ratio), 
-                    backgroundColor: '#0c1e38' 
+                    backgroundColor: ratioDataArr.map(d => getCandidateColor(d.cand))
                 }]
             },
             options: {
@@ -1003,7 +1039,7 @@
             }
         });
 
-        // 4. Composição da Audiência (Considera TikTok, Desconsidera YouTube)
+        // 4. Composição da Audiência
         resetChart('chartFollowersDetail');
         const dsFollowers = Object.keys(followerColors).map(rede => ({
             label: rede,
@@ -1036,7 +1072,7 @@
                 datasets: [{ 
                     label: 'Saldo de Seguidores', 
                     data: growthDataArr.map(d => d.growth), 
-                    backgroundColor: growthDataArr.map(d => d.growth >= 0 ? '#0c1e38' : '#dc2626') 
+                    backgroundColor: growthDataArr.map(d => d.growth >= 0 ? getCandidateColor(d.cand) : '#dc2626') 
                 }]
             },
             options: {
